@@ -115,10 +115,12 @@ Before the interview, you should be able to do all of these from a blank page in
 - [ ] Explain LSTM gating mechanism
 - [ ] Compare GQA vs MHA vs MQA
 
-**RL & Alignment**
-- [ ] REINFORCE from the log-derivative trick
-- [ ] PPO clipped objective and what it approximates
-- [ ] DPO loss and why it eliminates the reward model
+**RLHF & Alignment**
+- [ ] Explain the 3 stages of RLHF (pretrain → reward model → PPO)
+- [ ] Describe a Monte Carlo rollout in LLM training
+- [ ] How is a reward model trained from human preferences?
+- [ ] Why does PPO clip updates? (conceptually)
+- [ ] Map state, action, reward, and policy to an LLM
 
 **Systems**
 - [ ] Sketch 3D parallelism (DP x TP x PP) on 8 GPUs
