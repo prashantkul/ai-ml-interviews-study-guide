@@ -2,6 +2,8 @@
 
 A structured collection of study guides for **Machine Learning Engineer (MLE)** interview preparation. Covers math foundations, ML theory, deep learning architectures, systems design, hands-on PyTorch, and coding patterns — everything you need for theory, design, and coding rounds.
 
+> **New here?** Start with [Why This Matters](guides/why-this-matters.md) — a practical guide showing exactly where every topic shows up in a real LLM training pipeline. It will tell you why all of this is worth your time.
+
 ```mermaid
 graph LR
     B["Linear Algebra"]:::blue --> A["Math Foundations"]:::green
@@ -47,10 +49,12 @@ graph LR
 | [PyTorch & Tensors](guides/pytorch.md) | Tensors, autograd, modules, training loops | Basics first, then production patterns |
 | [ML Coding Patterns](guides/ml-coding-patterns.md) | From-scratch implementations, interview coding | NumPy basics first, then PyTorch |
 
-### Reference
+### Reference & Motivation
 | Guide | Description | Focus |
 |---|---|---|
+| [Why This Matters](guides/why-this-matters.md) | Practical guide mapping topics to real LLM pipelines | Motivation — why every topic is worth learning |
 | [All-In-One Guide](guides/all-in-one-guide.md) | Complete ML theory reference | ML, DL, RL, systems — everything in one file |
+| [Resources and References](guides/resources.md) | Curated articles, papers, courses, and tools | Best external resources, organized by topic |
 
 ---
 
