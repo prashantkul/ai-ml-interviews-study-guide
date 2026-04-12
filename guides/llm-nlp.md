@@ -208,17 +208,17 @@ This is why **contextualized embeddings** (ELMo 2018, BERT 2018, GPT 2018) took 
 ```mermaid
 flowchart LR
     subgraph Static["Static Embeddings (Word2Vec/GloVe)"]
-        S1[river bank]:::blue
-        S2[savings bank]:::blue
-        S1 --> SV[bank = [0.3, -0.1, 0.8, ...]]:::orange
+        S1["river bank"]:::blue
+        S2["savings bank"]:::blue
+        S1 --> SV["bank = (0.3, -0.1, 0.8, ...)"]:::orange
         S2 --> SV
     end
 
     subgraph Contextual["Contextual Embeddings (BERT/GPT)"]
-        C1[river bank]:::green
-        C2[savings bank]:::green
-        C1 --> CV1[bank = [0.1, 0.9, -0.2, ...]]:::purple
-        C2 --> CV2[bank = [-0.4, 0.2, 0.7, ...]]:::pink
+        C1["river bank"]:::green
+        C2["savings bank"]:::green
+        C1 --> CV1["bank = (0.1, 0.9, -0.2, ...)"]:::purple
+        C2 --> CV2["bank = (-0.4, 0.2, 0.7, ...)"]:::pink
     end
 
     classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
