@@ -41,6 +41,7 @@ graph LR
 | Guide | Description | Focus |
 |---|---|---|
 | [Deep Learning Architectures](guides/deep-learning-architectures.md) | CNNs, RNNs, transformers, GANs, diffusion models | Basics first, then modern architectures |
+| [LLMs & NLP](guides/llm-nlp.md) | NLP basics, transformer internals, attention variants, fine-tuning, RAG | Deep dive on LLM-specific topics |
 | [ML System Design](guides/ml-system-design.md) | Data pipelines, serving, monitoring, worked examples | Framework first, then real-world systems |
 | [RLHF & Monte Carlo](guides/rlhf-monte-carlo-guide.md) | RLHF pipeline, PPO, Monte Carlo rollouts explained simply | Beginner-friendly deep dive on RL for LLMs |
 
