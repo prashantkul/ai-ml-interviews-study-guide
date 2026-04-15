@@ -874,4 +874,5 @@ In the priority order from the source plan:
 - For the broader interview prep arc, see `all-in-one-guide.md` and `why-this-matters.md`.
 - For answers to common questions about this series (who it's for, what to cut under a deadline, how to apply it to your own evals), see the companion [`quant-stats-faq.md`](quant-stats-faq.md).
 - For the design-side companion -- how to build an eval from a hypothesis end-to-end in METR's style, with a full runnable case study -- see [`eval-design-case-study.md`](eval-design-case-study.md).
+- For the adversarial-robustness application of this pipeline on real JailbreakBench data (paired PAIR analysis plus an adaptive Best-of-N companion), see [`adv-robustness-survey.md`](adv-robustness-survey.md) and [`adv-robustness-case-study.md`](adv-robustness-case-study.md).
 - The companion runnable notebooks live in `../notebooks/week1_*.ipynb` through `week5_*.ipynb` and have Colab badges for one-click running.
