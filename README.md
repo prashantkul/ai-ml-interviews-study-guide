@@ -38,6 +38,7 @@ graph LR
 | [Probability & Statistics](guides/statistics.md) | Distributions, estimation, Bayes, information theory | Basics first, then ML applications |
 | [Quant Stats Skill-Building](guides/quant-stats-skill-building.md) | 6-week applied plan: CIs, paired bootstrap, power, FDR, eval overfitting | Hands-on, with runnable [companion notebooks](notebooks/) (Colab-ready) |
 | [Quant Stats FAQ](guides/quant-stats-faq.md) | FAQs for the skill-building series: who it's for, what to cut, how to apply it | Companion to the skill-building guide |
+| [Eval Design Case Study](guides/eval-design-case-study.md) | METR-style end-to-end: hypothesis → pre-registration → sample size → synth data → hierarchical bootstrap → decision | Design-side companion with a [runnable notebook](notebooks/eval_design_case_study.ipynb) |
 
 ### Deep Learning & Systems
 | Guide | Description | Focus |
