@@ -2,6 +2,24 @@
 
 A detailed 6-week applied-statistics module for ML interview prep. The core insight is that with a 2-3 hour weekly budget you cannot grind a textbook -- instead you build **8-10 short "quant stories"**: rehearsed, math-anchored explanations you can deliver in 90 seconds and defend under follow-up. This guide turns each week of that plan into a proper study module: formulas with intuition, a hands-on notebook, common interview questions, and a self-test. The notebooks live in `../notebooks/` and use synthetic data shaped like real eval pipelines (LAD-style monitors, SandboxBench-style agent tasks, attack-category leaderboards) so the worked examples match the kinds of stories you actually want to tell.
 
+```mermaid
+graph LR
+    W1["Week 1<br/>Confidence Intervals"]:::blue --> W2["Week 2<br/>Paired Comparison"]:::green
+    W2 --> W3["Week 3<br/>Power & Sample Size"]:::orange
+    W3 --> W4["Week 4<br/>Multiple Testing"]:::purple
+    W4 --> W5["Week 5<br/>Eval Overfitting"]:::red
+    W5 --> W6["Week 6<br/>Rehearse & Pressure-Test"]:::teal
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+```
+
+Each week builds on the previous one: you learn how to put error bars on one number (W1), then on the difference between two numbers (W2), then use those tools backward to plan an eval (W3), scale them up to many comparisons (W4), and finally see how they collectively expose why leaderboards lie (W5). Week 6 is pure rehearsal.
+
 ---
 
 ## Table of Contents
@@ -19,7 +37,7 @@ A detailed 6-week applied-statistics module for ML interview prep. The core insi
 
 ## Week 1 -- Confidence Intervals That Matter
 
-**Source plan reading:** Miller, "Adding Error Bars to Evals" (Anthropic, 2024).
+**Source plan reading:** Evan Miller, [*"Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations"*](https://arxiv.org/abs/2411.00640) (Anthropic, 2024).
 **Notebook:** `../notebooks/week1_confidence_intervals.ipynb`
 
 ### Learning Outcomes
@@ -29,6 +47,20 @@ A detailed 6-week applied-statistics module for ML interview prep. The core insi
 - Explain why the normal-approximation ("Wald") interval is wrong for proportions near 0 or 1, especially at small `n`.
 - State the width of an eval CI as a function of sample size and relate it to the cost of running more eval rollouts.
 - Deliver the LAD-style flashcard: "My result is X% [low, high] on n samples; the CI is this wide because..."
+
+```mermaid
+graph TD
+    A["Reporting p_hat on n eval items"]:::blue --> B{"n large AND<br/>p_hat far from 0 or 1?"}
+    B -->|Yes| C["Wald interval works<br/>(but still lazy)"]:::yellow
+    B -->|No| D{"Is the metric a<br/>plain proportion?"}
+    D -->|Yes| E["Wilson interval<br/>preferred default"]:::green
+    D -->|"No -- F1, AUC,<br/>BLEU, etc."| F["Bootstrap CI<br/>percentile or BCa"]:::teal
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef yellow fill:#F4D03F,stroke:#D4AC0F,color:#333
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+```
 
 ### Key Concepts
 
@@ -154,7 +186,7 @@ Both numbers sit comfortably inside each other's Wilson intervals at `n = 200`, 
 
 ## Week 2 -- Comparing Two Things Properly
 
-**Source plan reading:** Berg-Kirkpatrick et al., "An Empirical Investigation of Statistical Significance in NLP" (2012).
+**Source plan reading:** Berg-Kirkpatrick, Burkett, and Klein, [*"An Empirical Investigation of Statistical Significance in NLP"*](https://aclanthology.org/D12-1091/) (EMNLP, 2012).
 **Notebook:** `../notebooks/week2_paired_comparison.ipynb`
 
 ### Learning Outcomes
@@ -164,6 +196,20 @@ Both numbers sit comfortably inside each other's Wilson intervals at `n = 200`, 
 - Explain why pairing reduces variance and why an unpaired test on paired data is wasteful (and sometimes wrong).
 - Choose between paired bootstrap, McNemar, and a permutation test for a given setting.
 - Deliver the monitor-comparison flashcard: "To compare A vs B on the same eval set I use paired bootstrap because..."
+
+```mermaid
+graph TD
+    A["Comparing systems A and B"]:::blue --> B{"Same eval items<br/>scored by both?"}
+    B -->|No| C["Two-sample test<br/>unpaired z / bootstrap"]:::orange
+    B -->|Yes| D{"Metric is binary<br/>correct / wrong?"}
+    D -->|Yes| E["McNemar's test<br/>on discordant pairs"]:::green
+    D -->|"No -- continuous<br/>or complex metric"| F["Paired bootstrap<br/>on per-item differences"]:::teal
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+```
 
 ### Key Concepts
 
@@ -197,7 +243,7 @@ When the covariance is positive (the typical case -- both monitors find the easy
 
 The crucial detail: **resample examples, not predictions**. By resampling the example index, both A's and B's scores move together, preserving the pairing structure.
 
-For a one-sided test the p-value is `frac{delta_b <= 0}` (or its mirror, depending on direction). Berg-Kirkpatrick et al. discuss this in the NLP context; the recipe is the same for eval metrics.
+For a one-sided test the p-value is `frac{delta_b <= 0}` (or its mirror, depending on direction). [Berg-Kirkpatrick et al.](https://aclanthology.org/D12-1091/) discuss this in the NLP context; the recipe is the same for eval metrics.
 
 #### 3. McNemar's test (for binary classifiers)
 
@@ -294,7 +340,7 @@ McNemar's chi-square approximation is poor when the number of discordant pairs i
 
 ## Week 3 -- Power and Sample Size
 
-**Source plan reading:** Wasserman, *All of Statistics*, Ch 10.6 (power); or any solid blog post on power for proportions.
+**Source plan reading:** Larry Wasserman, [*All of Statistics*](https://www.stat.cmu.edu/~larry/all-of-statistics/), Ch 10.6 (power); or any solid blog post on power for proportions.
 **Notebook:** `../notebooks/week3_power_analysis.ipynb`
 
 ### Learning Outcomes
@@ -304,6 +350,21 @@ McNemar's chi-square approximation is poor when the number of discordant pairs i
 - Construct a power curve for a fixed effect size as `n` varies, and use it to argue for or against running an eval.
 - Translate an interviewer's "I want to detect a 5% difference" into a concrete sample-size answer in under a minute.
 - Deliver the SandboxBench flashcard: "To detect a 5% ASR difference with 80% power and 5% alpha I need around N tasks per arm because..."
+
+```mermaid
+graph TD
+    P["Power analysis<br/>fix any 3, solve the 4th"]:::red
+    A["alpha<br/>false-positive rate"]:::blue --> P
+    B["1 - beta<br/>power"]:::green --> P
+    C["effect size<br/>delta = p1 - p2"]:::orange --> P
+    D["n per group<br/>sample size"]:::purple --> P
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+```
 
 ### Key Concepts
 
@@ -442,7 +503,7 @@ That is "post hoc power" and it is uninformative -- the achieved power is mechan
 
 ## Week 4 -- Multiple Testing
 
-**Source plan reading:** Wasserman Ch 10.7 on Bonferroni and BH-FDR; or the Benjamini-Hochberg (1995) original paper.
+**Source plan reading:** [Wasserman](https://www.stat.cmu.edu/~larry/all-of-statistics/) Ch 10.7 on Bonferroni and BH-FDR; or the original [Benjamini and Hochberg (1995)](https://rss.onlinelibrary.wiley.com/doi/10.1111/j.2517-6161.1995.tb02031.x) paper in JRSS-B.
 **Notebook:** `../notebooks/week4_multiple_testing.ipynb`
 
 ### Learning Outcomes
@@ -452,6 +513,20 @@ That is "post hoc power" and it is uninformative -- the achieved power is mechan
 - Distinguish family-wise error rate (FWER) from false discovery rate (FDR) and explain when each matters.
 - Run BH on a realistic 12-attack-category leaderboard and decide which results survive.
 - Deliver the multiple-testing flashcard: "When I have K comparisons I control FDR via BH because Bonferroni is too conservative when..."
+
+```mermaid
+graph TD
+    A["Running m > 1 tests"]:::blue --> B{"Need strict<br/>family-wise control?"}
+    B -->|"Yes -- zero false<br/>positives allowed"| C["Bonferroni<br/>alpha / m threshold"]:::red
+    B -->|"No -- just bound<br/>false discoveries"| D{"Tests independent<br/>or PRDS?"}
+    D -->|Yes| E["Benjamini-Hochberg<br/>BH-FDR"]:::green
+    D -->|"No -- arbitrary<br/>dependence"| F["Benjamini-Yekutieli<br/>BY-FDR"]:::purple
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+```
 
 ### Key Concepts
 
@@ -577,7 +652,7 @@ It means that across the set of hypotheses I reject, the expected fraction that 
 
 ## Week 5 -- The Quant Nose Cheat Code
 
-**Source plan reading:** Lopez de Prado, *Advances in Financial Machine Learning*, Ch 11 + Ch 14. Skip the finance-specific material; extract the principle.
+**Source plan reading:** Marcos Lopez de Prado, *Advances in Financial Machine Learning*, Ch 11 + Ch 14. Skip the finance-specific material; extract the principle. The single most useful companion paper is Bailey and Lopez de Prado, [*"The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality"*](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551) (Journal of Portfolio Management, 2014) -- it is short, freely available, and contains essentially all the math you need for this module.
 **Notebook:** `../notebooks/week5_eval_overfitting.ipynb`
 
 ### Learning Outcomes
@@ -587,6 +662,21 @@ It means that across the set of hypotheses I reject, the expected fraction that 
 - Quantify the expected best-of-`K` inflation for a noisy metric and apply the correction.
 - Argue, in interview-grade prose, why most eval leaderboards are overfitted in the same way most backtests are.
 - Deliver the eval-overfitting flashcard: "Why most eval leaderboards lie -- the Deflated Sharpe analogy in 90 seconds."
+
+```mermaid
+graph LR
+    A["K candidate models"]:::blue --> B["All scored on the<br/>same test set"]:::blue
+    B --> C["Max observed score<br/>= true skill + noise"]:::orange
+    C --> D["Selection bias grows<br/>like sigma * sqrt(2 log K)"]:::red
+    D --> E["Apparent SOTA<br/>is inflated"]:::red
+    E --> F["Deflate: subtract<br/>expected-max correction"]:::green
+    F --> G["Honest leaderboard"]:::green
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+```
 
 ### Key Concepts
 
@@ -608,7 +698,7 @@ So the winner's score is inflated by approximately `sigma * sqrt(2 * log(K))`. W
 
 #### 2. The Deflated Sharpe Ratio (DSR), translated
 
-Lopez de Prado's DSR is the financial-econometrics version of the same problem. The Sharpe ratio of the apparently best strategy over `K` trials is biased upward exactly the way the best eval score is. The deflation correction subtracts an expected-maximum term so that the adjusted statistic has roughly the right distribution under the null of "no real skill."
+[Lopez de Prado's DSR](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551) is the financial-econometrics version of the same problem. The Sharpe ratio of the apparently best strategy over `K` trials is biased upward exactly the way the best eval score is. The deflation correction subtracts an expected-maximum term so that the adjusted statistic has roughly the right distribution under the null of "no real skill."
 
 The eval analogue: when you compare `K` models, monitors, or hyperparameter settings on the same eval, the right thing to report for the winner is
 
@@ -772,9 +862,9 @@ The 90-second pitch for each story. These are the things you should be able to d
 
 In the priority order from the source plan:
 
-- **Vershynin Ch 1-2 (high-dimensional probability).** Builds the intuitions you need for probe work and concentration arguments -- "why averaging in high dimensions concentrates so fast" is a recurring theme in monitor / probe research.
-- **Wasserman Ch 6-7 (CDF estimation, plug-in principle).** Deepens the bootstrap story by grounding it in the empirical CDF; makes the week 1 and 2 material feel inevitable rather than ad hoc.
-- **The METR time-horizon paper.** A clean modern example of careful eval design with explicit attention to sample size and confidence intervals; reading it sharpens your "what does a well-built eval look like" reference point.
+- **[Vershynin, *High-Dimensional Probability*](https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html), Ch 1-2.** Builds the intuitions you need for probe work and concentration arguments -- "why averaging in high dimensions concentrates so fast" is a recurring theme in monitor / probe research. Free PDF on the author's page.
+- **[Wasserman, *All of Statistics*](https://www.stat.cmu.edu/~larry/all-of-statistics/), Ch 6-7 (CDF estimation, plug-in principle).** Deepens the bootstrap story by grounding it in the empirical CDF; makes the week 1 and 2 material feel inevitable rather than ad hoc.
+- **METR, [*"Measuring AI Ability to Complete Long Tasks"*](https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/) (2025).** A clean modern example of careful eval design with explicit attention to sample size and confidence intervals; reading it sharpens your "what does a well-built eval look like" reference point.
 
 ---
 
@@ -782,4 +872,5 @@ In the priority order from the source plan:
 
 - For the foundational probability and CI material this guide assumes, see `statistics.md` (especially sections 8, 12, 13).
 - For the broader interview prep arc, see `all-in-one-guide.md` and `why-this-matters.md`.
+- For answers to common questions about this series (who it's for, what to cut under a deadline, how to apply it to your own evals), see the companion [`quant-stats-faq.md`](quant-stats-faq.md).
 - The companion runnable notebooks live in `../notebooks/week1_*.ipynb` through `week5_*.ipynb` and have Colab badges for one-click running.
