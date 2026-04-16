@@ -14,6 +14,8 @@ graph LR
     D --> F["ML System Design"]:::red
     P["PyTorch & Tensors"]:::teal --> E
     P --> G["ML Coding Patterns"]:::pink
+    S --> Q["Quant Stats<br/>Skill-Building"]:::blue
+    Q --> EV["Evals & Safety"]:::crimson
     E --> H["All-In-One Review"]:::yellow
 
     classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
@@ -24,6 +26,7 @@ graph LR
     classDef teal fill:#26A69A,stroke:#00897B,color:#fff
     classDef pink fill:#E91E63,stroke:#C2185B,color:#fff
     classDef yellow fill:#F4D03F,stroke:#D4AC0F,color:#333
+    classDef crimson fill:#DC143C,stroke:#B22222,color:#fff
 ```
 
 ---
@@ -38,10 +41,15 @@ graph LR
 | [Probability & Statistics](guides/statistics.md) | Distributions, estimation, Bayes, information theory | Basics first, then ML applications |
 | [Quant Stats Skill-Building](guides/quant-stats-skill-building.md) | 6-week applied plan: CIs, paired bootstrap, power, FDR, eval overfitting | Hands-on, with runnable [companion notebooks](notebooks/) (Colab-ready) |
 | [Quant Stats FAQ](guides/quant-stats-faq.md) | FAQs for the skill-building series: who it's for, what to cut, how to apply it | Companion to the skill-building guide |
+
+### Evals & Safety
+| Guide | Description | Focus |
+|---|---|---|
+| [Evals Theory](guides/evals-theory.md) | Foundational reference: experimental design, measurement theory, scoring, judge reliability, selection bias, adaptive evaluation | Start here — the "statistics.md" for evals |
+| [Eval Design Lifecycle](guides/eval-design-lifecycle.md) | 7-phase lifecycle: threat modeling, taxonomy, dataset curation, metrics, judge validation, adaptive red-teaming, statistical rigor — with an IPI case study | The "how to design an eval from scratch" guide, with a [runnable notebook](notebooks/eval_design_lifecycle.ipynb) |
 | [Eval Design Case Study](guides/eval-design-case-study.md) | METR-style end-to-end: hypothesis → pre-registration → sample size → synth data → hierarchical bootstrap → decision | Design-side companion with a [runnable notebook](notebooks/eval_design_case_study.ipynb) |
 | [Adv Robustness Survey](guides/adv-robustness-survey.md) | Landscape of jailbreak benchmarks, attacks (PAIR/GCG/BoN), defenders, and the methodology critique that motivates proper stats | Reference survey with verified hyperlinks throughout |
 | [Adv Robustness Case Study](guides/adv-robustness-case-study.md) | Apply the stats pipeline to real JailbreakBench PAIR data: the defender "wins" under fixed budget ([Notebook 1](notebooks/adv_robustness_non_adaptive.ipynb)) and "loses" under adaptive Best-of-N ([Notebook 2](notebooks/adv_robustness_adaptive.ipynb)) | Real data, two notebooks, one narrative |
-| [Eval Design Lifecycle](guides/eval-design-lifecycle.md) | 7-phase lifecycle: threat modeling, taxonomy, dataset curation, metrics, judge validation, adaptive red-teaming, statistical rigor — with an IPI case study | The "how to design an eval from scratch" guide, with a [runnable notebook](notebooks/eval_design_lifecycle.ipynb) |
 
 ### Deep Learning & Systems
 | Guide | Description | Focus |
