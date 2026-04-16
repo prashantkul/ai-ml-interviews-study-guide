@@ -324,6 +324,18 @@ Primary references for the [case study](adv-robustness-case-study.md):
 - [Confirm Labs -- Breaking Circuit Breakers](https://confirmlabs.org/posts/circuit_breaking.html)
 - [Revisiting the Robust Alignment of Circuit Breakers (arXiv 2407.15902)](https://arxiv.org/html/2407.15902v1)
 
+**IPI benchmarks**
+- [LLM-PIEval (GitHub)](https://github.com/amazon-science/llm-pieval)
+- [InjecAgent (arXiv 2403.02691)](https://arxiv.org/abs/2403.02691)
+- [BIPIA (arXiv 2312.14197)](https://arxiv.org/abs/2312.14197)
+- [AgentDojo (arXiv 2406.13352)](https://arxiv.org/abs/2406.13352)
+- [ASB (arXiv 2410.02644)](https://arxiv.org/abs/2410.02644)
+- [AgentDyn (arXiv 2602.03117)](https://arxiv.org/abs/2602.03117)
+- [AutoInject (arXiv 2602.05746)](https://arxiv.org/abs/2602.05746)
+- [Pasquini et al. meta-critique (arXiv 2510.05244)](https://arxiv.org/abs/2510.05244)
+- [Greshake et al. 2023 -- original IPI paper (arXiv 2302.12173)](https://arxiv.org/abs/2302.12173)
+- [Tensor Trust (arXiv 2311.01011)](https://arxiv.org/abs/2311.01011)
+
 ---
 
 ## Cross-Reference
@@ -331,4 +343,5 @@ Primary references for the [case study](adv-robustness-case-study.md):
 - [`adv-robustness-case-study.md`](adv-robustness-case-study.md) -- the companion case study that applies the stats pipeline to real JailbreakBench data.
 - [`quant-stats-skill-building.md`](quant-stats-skill-building.md) -- the 6-week stats module whose Week 1, 4, and 5 content is directly applied in the case study.
 - [`eval-design-case-study.md`](eval-design-case-study.md) -- the METR-style design module that the adv-robustness case study mirrors in structure (pre-registration, sample-size, hierarchical bootstrap).
-- Notebooks: `../notebooks/adv_robustness_non_adaptive.ipynb` and `../notebooks/adv_robustness_adaptive.ipynb`.
+- [`eval-design-lifecycle.md`](eval-design-lifecycle.md) -- the comprehensive eval design lifecycle guide that applies all seven phases (threat modeling through statistical rigor) to an IPI case study.
+- Notebooks: `../notebooks/adv_robustness_non_adaptive.ipynb`, `../notebooks/adv_robustness_adaptive.ipynb`, and `../notebooks/eval_design_lifecycle.ipynb`.
