@@ -16,6 +16,10 @@ graph LR
     P --> G["ML Coding Patterns"]:::pink
     S --> Q["Quant Stats<br/>Skill-Building"]:::blue
     Q --> EV["Evals & Safety"]:::crimson
+    EV --> EF["Eval Frameworks"]:::crimson
+    A --> LR["Low-Rank Analysis"]:::navy
+    E --> LR
+    LR --> EV
     E --> H["All-In-One Review"]:::yellow
 
     classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
@@ -27,6 +31,7 @@ graph LR
     classDef pink fill:#E91E63,stroke:#C2185B,color:#fff
     classDef yellow fill:#F4D03F,stroke:#D4AC0F,color:#333
     classDef crimson fill:#DC143C,stroke:#B22222,color:#fff
+    classDef navy fill:#2C3E7B,stroke:#1A2555,color:#fff
 ```
 
 ---
@@ -54,6 +59,7 @@ graph LR
 |---|---|---|
 | [Deep Learning Architectures](guides/deep-learning-architectures.md) | CNNs, RNNs, transformers, GANs, diffusion models | Basics first, then modern architectures |
 | [LLMs & NLP](guides/llm-nlp.md) | NLP basics, transformer internals, attention variants, fine-tuning, RAG | Deep dive on LLM-specific topics |
+| [Low-Rank Analysis](guides/low-rank-analysis.md) | Perturbation theory, nuclear norms, LoRA theory, control vectors, mechanistic interp, training dynamics, spectral robustness | Research-depth guide for low-rank steering and robust LLMs |
 | [ML System Design](guides/ml-system-design.md) | Data pipelines, serving, monitoring, worked examples | Framework first, then real-world systems |
 | [RLHF & Monte Carlo](guides/rlhf-monte-carlo-guide.md) | RLHF pipeline, PPO, Monte Carlo rollouts explained simply | Beginner-friendly deep dive on RL for LLMs |
 
@@ -67,6 +73,7 @@ graph LR
 | Guide | Description | Focus |
 |---|---|---|
 | [Evals Theory](guides/evals-theory.md) | Foundational reference: experimental design, measurement theory, scoring, judge reliability, selection bias, adaptive evaluation | Start here — the "statistics.md" for evals |
+| [Eval Frameworks](guides/eval-frameworks.md) | G-Eval, RAGAS, ARES, Prometheus, DeepEval, Inspect, promptfoo — when to use each, how they work, comparison table and decision flowchart | Practical guide to choosing and using eval tools |
 | [Eval Design Lifecycle](guides/eval-design-lifecycle.md) | 7-phase lifecycle: threat modeling, taxonomy, dataset curation, metrics, judge validation, adaptive red-teaming, statistical rigor — with an IPI case study | The "how to design an eval from scratch" guide, with a [runnable notebook](notebooks/eval_design_lifecycle.ipynb) |
 | [Eval Design Case Study](guides/eval-design-case-study.md) | METR-style end-to-end: hypothesis → pre-registration → sample size → synth data → hierarchical bootstrap → decision | Design-side companion with a [runnable notebook](notebooks/eval_design_case_study.ipynb) |
 | [Adv Robustness Survey](guides/adv-robustness-survey.md) | Landscape of jailbreak benchmarks, attacks (PAIR/GCG/BoN), defenders, and the methodology critique that motivates proper stats | Reference survey with verified hyperlinks throughout |
