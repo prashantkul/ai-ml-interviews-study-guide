@@ -104,6 +104,18 @@ Real-world weight matrices rarely have exact low rank. Instead, their singular v
 - **Polynomial decay** (`σ_i ∝ i^{-β}`): Moderate effective rank. Need more components for the same approximation quality. Common in pretrained weight matrices.
 - **Flat spectrum** (`σ_i ≈ constant`): Full rank. Low-rank approximation is lossy. This is what random matrices look like (Marchenko-Pastur, Section 5).
 
+```mermaid
+xychart-beta
+    title "Singular Value Decay: Three Regimes (σᵢ/σ₁ in %)"
+    x-axis "Index i" [1, 2, 3, 4, 5, 6, 7, 8]
+    y-axis "σᵢ / σ₁ (%)" 0 --> 105
+    line [100, 37, 14, 5, 2, 1, 0, 0]
+    line [100, 79, 66, 57, 50, 45, 41, 38]
+    line [100, 99, 101, 98, 100, 99, 98, 101]
+```
+
+*Top line (flat): random noise — Marchenko-Pastur bulk. Middle line (polynomial): pretrained weight matrix. Bottom line (exponential): fine-tuned ΔW — LoRA rank r should be set at the "elbow" where energy drops off.*
+
 **Effective rank** (Roy & Vetterli, 2007): `erank(A) = exp(H(σ̃))` where `σ̃_i = σ_i / Σ_j σ_j` and `H` is Shannon entropy. Ranges from 1 (rank-1) to p (flat spectrum). This single number tells you how compressible a matrix is.
 
 **Stable rank**: `srank(A) = ‖A‖_F² / ‖A‖_2² = (Σ σ_i²) / σ_1²`. Always ≤ rank(A). More robust to small singular values than algebraic rank. If `srank(A) ≪ rank(A)`, the matrix is "effectively low-rank" even though it is technically full-rank.
@@ -212,6 +224,24 @@ graph LR
 - **Small eigengap** → the subspace is fragile. A small, carefully chosen perturbation can rotate the subspace and change behavior drastically.
 
 This directly connects to the project's goal of "investigating how vulnerabilities arise from sensitivity along specific low-rank subspaces."
+
+```mermaid
+graph TD
+    subgraph "Large eigengap: σᵣ ≫ σᵣ₊₁"
+        LV["σ₁ ≥ ... ≥ σᵣ ≫ σᵣ₊₁"]:::blue --> LR2["Rotation ≤ ‖E‖ / (σᵣ − σᵣ₊₁) → small<br/>Subspace is stable ✓"]:::green
+    end
+    subgraph "Small eigengap: σᵣ ≈ σᵣ₊₁"
+        SV2["σ₁ ≥ ... ≥ σᵣ ≈ σᵣ₊₁"]:::orange --> SR2["Rotation ≤ ‖E‖ / (σᵣ − σᵣ₊₁) → large<br/>Tiny attack rotates subspace ✗"]:::red
+    end
+    LR2 --> IM2["Eigengap = direct measure of<br/>adversarial robustness"]:::purple
+    SR2 --> IM2
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+```
 
 ### Wedin's Theorem (Singular Subspace Perturbation)
 
@@ -538,6 +568,21 @@ For the LoRA update `h = (W_0 + BA)x`, the gradients are:
 
 **Implication.** The early training dynamics of LoRA are fundamentally different from full fine-tuning. The subspace (column space of B) is learned first, and the projection within the subspace (A) is learned second. This "direction before magnitude" ordering explains why LoRA sometimes converges slower than full fine-tuning on complex tasks.
 
+```mermaid
+graph TD
+    INIT["Init: B = 0, A ~ N(0, σ²)<br/>ΔW = BA = 0"]:::blue
+    INIT --> GRAD["Gradients at step 1:<br/>∂L/∂B = (∂L/∂h)·(Ax)ᵀ → non-zero ✓<br/>∂L/∂A = Bᵀ·(∂L/∂h)·xᵀ = 0 ✗"]:::orange
+    GRAD --> UPD["Only B updates in step 1<br/>learns the subspace direction (col-span of B)"]:::orange
+    UPD --> PHASE2["Steps 2+: B ≠ 0<br/>A begins receiving gradients"]:::green
+    PHASE2 --> CONV2["B refines subspace (Grassmann manifold)<br/>A learns projection within subspace"]:::green
+    CONV2 --> TIP["Practical: use LR warm-up so early B<br/>updates are small — find good subspace first"]:::purple
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+```
+
 ### Convergence Properties
 
 [Hayou et al. (2024)](https://arxiv.org/abs/2402.12354) analyze the convergence of LoRA training and show:
@@ -703,6 +748,26 @@ Train a linear classifier `y = σ(w^T h + b)` on frozen hidden states h to predi
 
 In high-dimensional non-convex optimization (neural network training), saddle points are exponentially more common than local minima. At a critical point, the Hessian eigenvalues can be positive (minimum direction), negative (maximum direction), or zero (flat direction). The probability that all eigenvalues are positive (local minimum) decreases exponentially with dimension.
 
+```mermaid
+graph TD
+    CP["∇L(θ) = 0<br/>Critical Point"]:::blue
+    CP --> EIG["Compute Hessian eigenvalues λᵢ of ∇²L(θ)"]:::gray
+    EIG -->|"all λᵢ > 0"| LM["Local Minimum<br/>GD converges ✓"]:::green
+    EIG -->|"all λᵢ < 0"| LX["Local Maximum<br/>GD escapes instantly"]:::red
+    EIG -->|"mixed signs"| SP["Saddle Point<br/>GD escapes via noise"]:::orange
+
+    SP --> HD["In d dimensions:<br/>P(all λᵢ > 0) ∝ exp(−d)<br/>Saddles dominate the landscape"]:::purple
+    LM --> HD2["Global min set forms a<br/>connected manifold (dim ≈ D − n)<br/>for overparameterized networks"]:::teal
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef gray fill:#7F8C8D,stroke:#626567,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+```
+
 **Implications.** SGD does not get "stuck" at saddle points because gradient noise pushes it off saddle regions. This is why SGD works despite the non-convexity of neural network loss — the landscape, while non-convex, does not have the "bad" kind of non-convexity (many poor local minima).
 
 ### Mode Connectivity
@@ -732,6 +797,21 @@ In high-dimensional non-convex optimization (neural network training), saddle po
 
 **Interpretation.** The model navigates to the boundary of stability and surfs along it. This is a self-organizing behavior that classical optimization theory does not predict (for quadratics, GD diverges when `λ_max > 2/η`).
 
+```mermaid
+graph LR
+    T0["Early training<br/>λ_max(H) ≪ 2/η<br/>loss ↓ smoothly"]:::green
+    T0 -->|"progressive sharpening"| T1["λ_max(H) → 2/η<br/>approaching stability boundary"]:::orange
+    T1 -->|"hits boundary"| T2["Edge of Stability<br/>λ_max(H) ≈ 2/η<br/>loss oscillates, avg ↓"]:::red
+    T2 -->|"SAM seeks to escape via<br/>flat-minima objective"| FLAT["Flat minimum<br/>lower sharpness<br/>better robustness"]:::teal
+    T2 --> IMPL["At EoS: model maximally sensitive<br/>along top Hessian eigenvector<br/>= top low-rank subspace of W"]:::purple
+
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+    classDef purple fill:#9B59B6,stroke:#7D3C98,color:#fff
+```
+
 **Why this matters for low-rank analysis.** The Hessian's maximum eigenvalue determines the sharpest direction in the loss landscape. At the edge of stability, the model is maximally sensitive along this direction. If this direction aligns with a low-rank subspace of the weight matrix, then perturbations along that subspace will have outsized effects on the loss — a potential vulnerability.
 
 ### Sharpness-Aware Minimization (SAM)
@@ -755,6 +835,27 @@ The inner maximization finds the worst-case perturbation of size ρ, and the out
 [Power et al. (2022)](https://arxiv.org/abs/2201.02177). A phenomenon where a model first memorizes the training data (achieving perfect training accuracy) and then, after many more training steps, suddenly generalizes to the test set. The generalization happens long after the model has apparently converged.
 
 **Mechanism.** During the memorization phase, the model uses high-rank, "lookup table" representations. During grokking, the model discovers a low-rank, structured representation that captures the underlying algorithm. The transition is visible in the singular spectrum of weight matrices: the effective rank drops sharply at the grokking transition.
+
+```mermaid
+graph LR
+    subgraph "Phase 1 — Memorization"
+        P1A["Train acc → 100%<br/>Test acc ≈ chance"]:::orange
+        P1B["High effective rank<br/>lookup-table weights"]:::red
+        P1C["Sharp loss landscape<br/>many singular values active"]:::red
+        P1A --- P1B --- P1C
+    end
+    subgraph "Phase 2 — Generalization"
+        P2A["Test acc suddenly jumps"]:::green
+        P2B["Low effective rank<br/>structured algorithmic weights"]:::green
+        P2C["Flat loss landscape<br/>few dominant singular values"]:::green
+        P2A --- P2B --- P2C
+    end
+    P1C -->|"weight decay slowly erodes<br/>high-rank solution"| P2A
+
+    classDef orange fill:#FF8C42,stroke:#E07030,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+```
 
 **Connection to low-rank analysis.** Grokking demonstrates that neural networks can transition from high-rank (memorization) to low-rank (generalization) solutions during training. Weight decay accelerates this transition by penalizing high-rank solutions. LoRA's rank constraint can be seen as an extreme form of this pressure — forcing the model to find low-rank solutions from the start.
 
@@ -818,6 +919,28 @@ f_{W+E}(x) - f_W(x) ≈ J_g · E · x
 ```
 
 The maximally effective weight perturbation E (subject to `‖E‖_F ≤ ε`) is `E* = ε · u_1 · (v_1^T x / ‖v_1^T x‖)` — a rank-1 perturbation aligned with the top singular direction of `J_g` and the input.
+
+```mermaid
+graph TD
+    W2["W = UΣVᵀ"]:::blue
+    W2 --> TS2["Top-r subspace: span(v₁,...,vᵣ)<br/>large σᵢ — model amplifies inputs here"]:::red
+    W2 --> OS2["Orthogonal complement: span(vᵣ₊₁,...)<br/>small σᵢ — model nearly blind here"]:::green
+
+    subgraph "Perturbation δ with ‖δ‖ ≤ ε"
+        AT2["Decompose δ = δ_∥ + δ_⊥"]:::gray
+        AT2 --> ATA2["δ_∥ aligned with top subspace<br/>amplified by σ₁ → large output shift ↑↑"]:::red
+        AT2 --> ATO2["δ_⊥ orthogonal to top subspace<br/>attenuated → tiny output shift ↓↓"]:::green
+    end
+
+    TS2 --> AT2
+    ATA2 --> DEF2["Defense: flatten singular spectrum<br/>reduce σ₁/σᵣ ratio via spectral regularization"]:::teal
+
+    classDef blue fill:#4A90D9,stroke:#2E6DB4,color:#fff
+    classDef red fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef green fill:#50C878,stroke:#3DA35D,color:#fff
+    classDef gray fill:#7F8C8D,stroke:#626567,color:#fff
+    classDef teal fill:#26A69A,stroke:#00897B,color:#fff
+```
 
 ### Adversarial Prompts as Low-Rank Perturbations
 
