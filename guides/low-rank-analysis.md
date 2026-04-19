@@ -34,32 +34,38 @@ graph LR
 5. [Probabilistic Tools: Concentration and Random Matrices](#5-probabilistic-tools-concentration-and-random-matrices)
 
 **Part 2 -- Low-Rank Structure in Transformers**
+
 6. [Intrinsic Dimensionality of Neural Networks](#6-intrinsic-dimensionality-of-neural-networks)
 7. [Spectral Properties of Transformer Weights](#7-spectral-properties-of-transformer-weights)
 8. [Low-Rank Structure in Attention](#8-low-rank-structure-in-attention)
 
 **Part 3 -- Parameter-Efficient Fine-Tuning: Theory and Methods**
+
 9. [LoRA: Theory and Geometry](#9-lora-theory-and-geometry)
 10. [Beyond LoRA: Modern PEFT Methods](#10-beyond-lora-modern-peft-methods)
 11. [Training Dynamics of Low-Rank Adaptation](#11-training-dynamics-of-low-rank-adaptation)
 
 **Part 4 -- Steering, Interpretability, and Representation Engineering**
+
 12. [The Linear Representation Hypothesis](#12-the-linear-representation-hypothesis)
 13. [Control Vectors and Activation Engineering](#13-control-vectors-and-activation-engineering)
 14. [Activation Patching and Causal Intervention](#14-activation-patching-and-causal-intervention)
 15. [Probing and Mechanistic Interpretability](#15-probing-and-mechanistic-interpretability)
 
 **Part 5 -- Training Dynamics**
+
 16. [Loss Landscape Geometry](#16-loss-landscape-geometry)
 17. [Edge of Stability and Sharpness](#17-edge-of-stability-and-sharpness)
 18. [Phase Transitions, Grokking, and Emergent Structure](#18-phase-transitions-grokking-and-emergent-structure)
 
 **Part 6 -- Robustness Through the Low-Rank Lens**
+
 19. [Subspace Vulnerability Analysis](#19-subspace-vulnerability-analysis)
 20. [Spectral Regularization for Robustness](#20-spectral-regularization-for-robustness)
 21. [Benchmarking Stability Under Perturbation](#21-benchmarking-stability-under-perturbation)
 
 **Part 7 -- Interview Prep**
+
 22. [Interview Questions](#22-interview-questions)
 23. [Cross-Reference](#cross-reference)
 
